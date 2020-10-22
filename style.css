@@ -1,0 +1,110 @@
+@font-face {
+	font-family: "Google Sans";
+	src: url("font/GoogleSans-Regular.ttf");
+}
+body{
+	color: #616161;
+	font-family: Google Sans;
+    text-align: center;
+}
+a, a:visited{
+	color: #616161;	
+	text-decoration : none;
+}
+select, input, option, textarea{
+	height : auto;
+    border: 1px solid #bdbdbd;
+    /* border: none; */
+	font-size: 100%;
+    color: #616161;
+    font-family: Google Sans;
+    width: 100%;	
+    background: #ededea;
+}
+textarea {
+	resize: none;
+	width: 98.5%;
+}
+select, input, label, option {
+    text-align: center;
+    text-align-last: center;	
+    background: #ededea;
+    width: 100%;
+}
+h1 {
+	font-size: 2.5em;
+	margin: 0px;
+	/*transition: all 1s;*/
+}
+
+/* h1:hover {
+	font-size: 2.5em;
+	transform: rotate(360deg);
+	color : red;
+	text-decoration: underline wavy red;
+	letter-spacing: -1.5em;
+} */
+
+header{
+	display: block;
+	background: #ededea;
+	margin: 5px 30% 5px 30%;
+	padding: 1em;
+	border-radius: 15px;
+	text-align: center;
+}
+section{
+	display: block;
+	background: #ededea;
+    border: 1px solid #616161;
+	border-radius: 15px;
+	margin: 2.0em;
+	padding: 0.4em;
+	vertical-align:top;
+	text-align: center;
+}
+section p{
+	color : #f0f0f0;
+	text-align: center;
+}
+article{
+    display: inline-block;
+    border: 1px solid #616161;
+    /* border: none; */
+    border-radius: 15px;
+    margin: 2.5%;
+    padding: 1.0em;
+    vertical-align: top;
+}
+article p{
+    color: #929191;
+    text-align: center;
+	font-size: 1.4em;
+	/* transition: all 0.1s ease-in; */
+}
+.DataType {
+	color : #f0f0f0;
+}
+.DataValue {
+	color: #616161;	
+}
+.tab {
+	width: -webkit-fill-available;
+	padding: 2px;
+	text-align: center;
+    border: 1px solid #616161;
+	border : collapse;
+	text-align: center;
+	margin: auto;
+}
+.tab th {
+    color: #929191;
+    text-align: center;
+	font-size: 1em;
+	weight: bold;
+}
+.tab td, .tab p{    
+    color: #929191;
+    text-align: center;
+	margin: 1% 0% 1% 0%;
+}
