@@ -8,7 +8,7 @@
     <script src="script.js"></script>
     <title>Pseudo Assembler Interpreter</title>
 </head>
-<body>
+<body onload="test()">
     <h1>Pseudo Assembler Interpreter</h1>
     
     <section>
@@ -24,9 +24,12 @@
             </form>
         </article>        
         <article>
-            <input type="button" name="btn_run" onClick="run()" value="Run Code"> 
+            <input type="button" name="btn_run" onClick="execute(0, -1)" value="Execute Program"> 
             <br/><br/>                      
             <a id="instr_table"></a>
+        </article>
+        <article>
+            <a id="AC_res">Accumulator Value: null</a>
         </article>
 
     </section>

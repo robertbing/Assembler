@@ -1,5 +1,6 @@
 var code = [];
 var instructionSet = ["LOAD", "STORE", "ADD", "SUB", "MUL", "QUOT", "MODULO", "JUMP", "JUMPZERO", "STOP"];
+var nextIndex = 0;
 
 function add_instr(instruction){
     var success = false;
@@ -11,11 +12,26 @@ function add_instr(instruction){
     var operation = instruction.substring(0, instruction.indexOf(" "));
     var register = instruction.substring(instruction.indexOf(" ") + 1);
     if(instructionSet.includes(operation.toUpperCase())){
-        code.push([true, operation.toUpperCase(), register.toUpperCase()]);
+        if(isNumeric(register)){
+             //add numeric value as seperate register
+            
+            var newRegisterName = "R0";
+            var newRegisterIndex = 0;
+            while(validate_register_name(newRegisterName) == false){
+                newRegisterIndex++;
+                newRegisterName = "R" + String(newRegisterIndex);
+            }
+            add_instr(String(newRegisterName) + " " + String(register));
+            code.push([nextIndex, true, operation.toUpperCase(), String(newRegisterName)]);    
+            nextIndex++; 
+        } else {
+            code.push([nextIndex, true, operation.toUpperCase(), register.toUpperCase()]);    
+            nextIndex++;
+        }
         success = true;
     } else {
         if(validate_register_name(operation.toUpperCase()) == true){
-            code.unshift([false, operation.toUpperCase(), register]);
+            code.unshift(["def", false, operation.toUpperCase(), register]);
             success = true;
         } else {
             alert("Register name already allocated");
@@ -54,7 +70,7 @@ function instr_down(index){
 }
 
 function edit_instr(index){
-    var edit_string = code[index][1].toUpperCase() + " " + code[index][2].toUpperCase();
+    var edit_string = code[index][2].toUpperCase() + " " + code[index][2].toUpperCase();
     var newInstruction = prompt("Edit instruction ([operation] [register] OR [register] [value]): ", edit_string);
     if(add_instr(newInstruction)){
         code[index] = code[code.length - 1];
@@ -64,27 +80,22 @@ function edit_instr(index){
 }
 
 function create_instr_table(){
+    fix_indices();
     var table = "<table class='tab'><tr><th>Index</th><th>Operation</th><th>Register</th></tr>";
-    var lastIndex = -1;
     for(var i = 0; i < code.length; i++){
-        var index;
-        if(instructionSet.includes(code[i][1])){
-            lastIndex++;
-            index = lastIndex;
-        } else {
-            index = "<i>def</i>";
-        }        
         var options = "<td><input type='button' onclick='edit_instr(" + i + ")' value='&#9998;'></td><td><input type='button' onclick='remove_instr(" + i + ")' value='X'></td><td></input><input type='button' onclick='instr_up(" + i + ")' value='&#8593;'></td><td></input><input type='button' onclick='instr_down(" + i + ")' value='&#8595;'></input></td>"
-        table += "<tr><td>" + index + "</td><td>" + code[i][1] + "</td><td>" + code[i][2]  + "</td>" + options + "</tr>";
+        table += "<tr><td>" + String(code[i][0]) + "</td><td>" + code[i][2] + "</td><td>" + code[i][3]  + "</td>" + options + "</tr>";
     }
     table += "</table>";
-    document.getElementById("instr_table").innerHTML = table;
+    document.getElementById("instr_table").innerHTML = table;    
+    //console.clear();
+    console.log(code);
 }
 
 function validate_register_name(registerName){
     var valid = true;
     for(var i = 0; i < code.length; i++){
-        if(code[i][0] == false && code[i][1] == registerName){
+        if(code[i][1] == false && code[i][2] == registerName){
             valid = false;
             break;
         };
@@ -95,39 +106,77 @@ function validate_register_name(registerName){
 function run(){
     var AC;
     for(var i = 0; i < code.length; i++){
-        console.log(code[i]);
-        if(code[i][0]){
+        //console.log(code[i]);
+        if(code[i][1]){
             var registerValue;
-            if(!isNumeric(code[i][2])){
-                registerValue = get_reg(code[i][2]);
+            if(!isNumeric(code[i][3])){
+                if(get_reg(code[i][3]) != null){
+                    registerValue = get_reg(code[i][3]);
+                } else {
+                    alert("Error in Index " + String(i));
+                }
             } else {
-                registerValue = parseInt(code[i][2]);
+                registerValue = parseInt(code[i][3]);
             }
-            switch(code[i][1]){
+            switch(code[i][2]){
                 case "LOAD" : AC = registerValue; break;    
-                case "STORE" : store(code[i][1], code[i][2]); break;  
+                case "STORE" : store(code[i][2], code[i][3]); break;  
                 case "ADD" : AC += registerValue; break;   
                 case "SUB" : AC -= registerValue; break;      
                 case "MUL" : AC *= registerValue; break;      
                 case "QUOT" : AC /= registerValue; break;      
                 case "MODULO" : AC %= registerValue; break;    
-                /*
+                
                 case "JUMP" : AC *= registerValue; break;     
+                /*
                 case "JUMPZERO" : AC *= registerValue; break;   
                 case "STOP" : AC *= registerValue; break;     
                 */         
             }
         }
         console.log(AC);
+        document.getElementById("AC_res").innerHTML = "Accumulator value : " + String(AC);
     }
 }
 
+function execute(startIndex, stopIndex){
+    var index = startIndex;
+    if(stopIndex == -1){
+        stopIndex = code.length - 1;
+    }
+    var AC;
+    console.log(startIndex, stopIndex);
+
+    while(index <= stopIndex){
+        //console.log(code[index]);
+        var registerValue = get_reg(code[index][3]); 
+        switch(code[index][2]){
+            case "LOAD" : AC = registerValue; break;    
+            case "STORE" : store(code[i][2], code[i][3]); break;  
+            case "ADD" : AC += registerValue; break;   
+            case "SUB" : AC -= registerValue; break;      
+            case "MUL" : AC *= registerValue; break;      
+            case "QUOT" : AC /= registerValue; break;      
+            case "MODULO" : AC %= registerValue; break;    
+                
+            //case "JUMP" : index = ; break;     
+                /*
+                case "JUMPZERO" : AC *= registerValue; break;   
+                case "STOP" : AC *= registerValue; break;     
+                */         
+        }
+        index++;
+    }        
+    console.log(AC);
+    document.getElementById("AC_res").innerHTML = "Accumulator value : " + String(AC);
+}
+
 function get_reg(registerName){
-    var value;
+    var value = null;
     for(var i = 0; i < code.length; i++){
-        if(code[i][0] == false && code[i][1] == registerName){
-           value = code[i][2];
-           console.log(code[i][1] + "="  + code[i][2]);
+        if(code[i][1] == false && code[i][2] == registerName){
+           value = code[i][3];
+           console.log(code[i][2] + "="  + code[i][3]);
         }
     } 
     return parseInt(value);
@@ -135,8 +184,8 @@ function get_reg(registerName){
 
 function store(registerName, value){
     for(var i = 0; i < code.length; i++){
-        if(code[i][0] == false && code[i][1] == registerName){
-           code[i][2] = value;
+        if(code[i][1] == false && code[i][2] == registerName){
+           code[i][3] = value;
         }
     } 
 }
@@ -148,20 +197,33 @@ function isNumeric(str) {
            !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
   }
 
-  function readTextFile(file)
-{
-    var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", file, false);
-    rawFile.onreadystatechange = function ()
-    {
-        if(rawFile.readyState === 4)
-        {
-            if(rawFile.status === 200 || rawFile.status == 0)
-            {
-                var allText = rawFile.responseText;
-                alert(allText);
-            }
-        }
+function test(){
+    add_instr("test 2");
+    add_instr("test2 4");
+    add_instr("load test");
+    add_instr("add test2");
+    add_instr("mul test2");
+    //run();
+    execute(0, -1);
+}
+
+function get_next_index(){
+    try{
+        //if(code[code.length - 1][1])
+        var index = code[code.length - 1][2] + 1; 
+    } catch (e){
+        console.log(e);
+        index = 0;
     }
-    rawFile.send(null);
+    return index;   
+}
+
+function fix_indices(){
+    var lastIndex = 0;
+    for(var i = 0; i < code.length; i++){
+        if(code[i][0] != "def"){
+            code[i][0] = lastIndex++;
+            console.log("Index #" + i + " (" + code[i][0] + ") was changed to " + lastIndex);
+        };
+    }
 }
