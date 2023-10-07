@@ -70,7 +70,7 @@ function instr_down(index){
 }
 
 function edit_instr(index){
-    var edit_string = code[index][2].toUpperCase() + " " + code[index][2].toUpperCase();
+    var edit_string = code[index][2].toUpperCase() + " " + code[index][3].toUpperCase();
     var newInstruction = prompt("Edit instruction ([operation] [register] OR [register] [value]): ", edit_string);
     if(add_instr(newInstruction)){
         code[index] = code[code.length - 1];
